@@ -33,3 +33,18 @@ def save_scrape(product_id, r):
         "currency": r["currency"],
         "tries": r["tries"],
     }).execute()
+
+
+def remove_product(product_id):
+    sb.table("tracked_products").delete().eq("id", product_id).execute()
+
+
+def get_history(product_id):
+    return (sb.table("scrape_log").select("*")
+            .eq("product_id", product_id).order("scraped_at").execute().data)
+
+
+def get_full_history():
+    return (sb.table("scrape_log")
+            .select("scraped_at,price,stock,outcome,tracked_products(store_item_id,name,option_label)")
+            .order("scraped_at").execute().data)

@@ -2,3 +2,6 @@ playwright
 requests
 supabase
 python-dotenv
+django
+gunicorn
+django-cors-headers
