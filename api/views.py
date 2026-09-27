@@ -1,6 +1,7 @@
 import csv
 import io
 import json
+import os
 
 import requests
 from django.http import JsonResponse, HttpResponse
@@ -9,6 +10,8 @@ from django.views.decorators.csrf import csrf_exempt
 import db
 
 STORE = "https://demo.inelabteamdev.com"
+GH_TOKEN = os.environ.get("GITHUB_TOKEN")
+GH_REPO = os.environ.get("GITHUB_REPO", "Utkarsh7542/ine-price-tracker")
 
 
 def home(request):
@@ -55,6 +58,23 @@ def untrack(request):
 def history(request):
     product_id = int(request.GET.get("product_id"))
     return JsonResponse(db.get_history(product_id), safe=False)
+
+
+@csrf_exempt
+def scrape_now(request):
+    # kick off a github actions run so newly tracked products get data now
+    # instead of waiting for the next 2-hourly schedule
+    if not GH_TOKEN:
+        return JsonResponse({"error": "no github token set"}, status=500)
+    r = requests.post(
+        f"https://api.github.com/repos/{GH_REPO}/actions/workflows/scrape.yml/dispatches",
+        headers={"Authorization": f"Bearer {GH_TOKEN}",
+                 "Accept": "application/vnd.github+json"},
+        json={"ref": "main"}, timeout=15,
+    )
+    if r.status_code == 204:
+        return JsonResponse({"ok": True})
+    return JsonResponse({"error": r.text}, status=502)
 
 
 def export_csv(request):

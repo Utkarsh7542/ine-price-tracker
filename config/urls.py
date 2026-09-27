@@ -9,5 +9,6 @@ urlpatterns = [
     path("api/track", views.track),
     path("api/untrack", views.untrack),
     path("api/history", views.history),
+    path("api/scrape-now", views.scrape_now),
     path("api/export.csv", views.export_csv),
 ]

@@ -12,5 +12,6 @@ export const api = {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }),
   }).then(r => r.json()),
   history: (pid) => fetch(`${BASE}/api/history?product_id=${pid}`).then(r => r.json()),
+  scrapeNow: () => fetch(`${BASE}/api/scrape-now`, { method: 'POST' }).then(r => r.json()),
   exportUrl: () => `${BASE}/api/export.csv`,
 }
