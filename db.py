@@ -48,3 +48,8 @@ def get_full_history():
     return (sb.table("scrape_log")
             .select("scraped_at,price,stock,outcome,tracked_products(store_item_id,name,option_label)")
             .order("scraped_at").execute().data)
+
+
+def search_catalog(q):
+    return (sb.table("catalog").select("id,name,brand,category")
+            .ilike("name", f"%{q}%").limit(25).execute().data)

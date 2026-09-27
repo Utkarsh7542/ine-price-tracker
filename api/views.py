@@ -10,30 +10,6 @@ import db
 
 STORE = "https://demo.inelabteamdev.com"
 
-# the store has no real search, so we pull the catalog once and keep it in
-# memory, then filter names ourselves.
-_catalog = []
-
-
-def load_catalog():
-    global _catalog
-    if _catalog:
-        return _catalog
-    seen = {}
-    for page in range(1, 30):
-        try:
-            data = requests.get(f"{STORE}/api/v2/listings",
-                                params={"page": page, "limit": 60}, timeout=15).json()
-        except Exception:
-            break
-        for it in data.get("results", []):
-            seen[it["id"]] = {"id": it["id"], "name": it["name"],
-                              "brand": it["brand"], "category": it["category"]}
-        if len(seen) >= 950:
-            break
-    _catalog = list(seen.values())
-    return _catalog
-
 
 def home(request):
     return JsonResponse({"ok": True, "service": "ine price tracker api"})
@@ -44,11 +20,12 @@ def products(request):
 
 
 def search(request):
-    q = request.GET.get("q", "").strip().lower()
+    # catalog is cached in supabase (see build_catalog.py), so this is a quick
+    # name lookup instead of hitting the store live on every search.
+    q = request.GET.get("q", "").strip()
     if not q:
         return JsonResponse([], safe=False)
-    matches = [it for it in load_catalog() if q in it["name"].lower()]
-    return JsonResponse(matches[:25], safe=False)
+    return JsonResponse(db.search_catalog(q), safe=False)
 
 
 def options(request):
