@@ -12,7 +12,7 @@ surrounded by fake prices and invisible characters. How I dealt with all of
 that is in DESIGN_NOTE.md.
 
 ## Live links
-- App: <PASTE YOUR VERCEL PRODUCTION URL>
+- App: https://ine-price-tracker-lyart.vercel.app/
 - API: https://ine-price-tracker-jqoc.onrender.com
 - Repo: https://github.com/Utkarsh7542/ine-price-tracker
 
