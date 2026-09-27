@@ -1,6 +1,5 @@
-# the store has no search and shuffles its listing on every request, so to
-# search by name we first grab the whole catalog once and stash it in supabase.
-# run this once (and again if you ever want to refresh it).
+# grab the whole store catalog once and save it to supabase so search is fast.
+# run this once.
 import time
 import requests
 from db import sb

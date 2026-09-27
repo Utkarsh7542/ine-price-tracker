@@ -23,8 +23,7 @@ def products(request):
 
 
 def search(request):
-    # catalog is cached in supabase (see build_catalog.py), so this is a quick
-    # name lookup instead of hitting the store live on every search.
+    # catalog is cached in supabase, so search is just a quick db lookup
     q = request.GET.get("q", "").strip()
     if not q:
         return JsonResponse([], safe=False)
@@ -62,8 +61,7 @@ def history(request):
 
 @csrf_exempt
 def scrape_now(request):
-    # kick off a github actions run so newly tracked products get data now
-    # instead of waiting for the next 2-hourly schedule
+    # trigger a github actions run so new products get data without waiting 2h
     if not GH_TOKEN:
         return JsonResponse({"error": "no github token set"}, status=500)
     r = requests.post(

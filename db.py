@@ -1,5 +1,4 @@
-# small wrapper around supabase so the rest of the code doesn't have to know
-# how the db works. reads the url + key from a .env file (never committed).
+# supabase helpers. keys come from the .env file.
 
 import os
 from dotenv import load_dotenv

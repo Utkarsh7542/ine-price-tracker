@@ -1,11 +1,5 @@
-# scraper for the INE store.
-#
-# the price is hidden behind two tricks: a "hover the box first" human check,
-# and a puzzle that sometimes fails on purpose. so we drive a real browser,
-# get past both, and read the real price straight out of the page (the price
-# text on screen has fake numbers + invisible characters, so we can't trust it).
-#
-# scrape_price() returns a plain dict, so the db / api can just use it.
+# scrapes a product's price + stock off the INE store.
+# the price is behind a bot-check, so we drive a real browser to get past it.
 
 import random
 import re
@@ -100,8 +94,7 @@ def pick_option(page, option):
 
 
 def wake_button(page, btn):
-    # button is dead until the mouse moves over the price box ~8 times and
-    # lingers ~600ms, so wiggle the mouse around inside it
+    # button stays dead until you wiggle the mouse over the price box a few times
     box = page.locator(".offer-panel").bounding_box()
     if not box:
         return
@@ -116,8 +109,7 @@ def wake_button(page, btn):
 
 
 def click_check_price(page):
-    # clear popup, wake button, click. a failed click is usually a late popup,
-    # so clear it and try again (this does NOT use up a real retry)
+    # clear popup, wake the button, click. retry the click if a late popup blocks it
     for _ in range(3):
         wait_no_popup(page)
         btn = page.get_by_role("button", name=re.compile("check today|retry|check again", re.I)).first
@@ -145,8 +137,7 @@ def wait_for_price(page, secs=12):
 
 
 def scrape_price(item_id, option=None, headless=True, max_tries=12, watch=False):
-    """go to a product, pick the option, get past the guard, read the price.
-    returns a dict; on total failure price/stock are None and outcome='failed'."""
+    # returns a dict; if it never gets through, price/stock are None and outcome = failed
     row = {
         "item_id": item_id,
         "option": option,
@@ -176,14 +167,15 @@ def scrape_price(item_id, option=None, headless=True, max_tries=12, watch=False)
                                currency=quote["currency"], seller=quote.get("seller"),
                                outcome=("success" if t == 1 else "retried"))
                     return row
+                if watch:
+                    print(f"  try {t}: {result}, retrying...")
                 time.sleep(random.uniform(0.6, 1.4))
             return row
         finally:
             browser.close()
 
 
-# quick manual test: scrape a few products so I can see it works in general.
-# run: python scraper.py
+# run this (python scraper.py) to watch it work on a few products
 if __name__ == "__main__":
     jobs = [
         (2290, "Neutral white"),   # Redwick LED Strip Core, specific option

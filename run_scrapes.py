@@ -1,5 +1,4 @@
-# scrape every tracked product once and save the result. this is what the
-# scheduler will run every 2 hours.
+# scrape every tracked product once and save it. the scheduler runs this every 2h.
 from db import get_products, save_scrape
 from scraper import scrape_price
 
