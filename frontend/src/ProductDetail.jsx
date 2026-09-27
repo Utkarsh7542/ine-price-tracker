@@ -8,21 +8,20 @@ export default function ProductDetail({ product, onUntracked }) {
   const [rows, setRows] = useState([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
+  function load() {
     setLoading(true)
     api.history(product.id).then(data => {
       setRows(data)
       setLoading(false)
     })
-  }, [product])
+  }
+
+  useEffect(load, [product])
 
   // the chart only uses runs that actually got a price
   const chartData = rows
     .filter(r => r.price != null)
-    .map(r => ({
-      time: new Date(r.scraped_at).toLocaleString(),
-      price: Number(r.price),
-    }))
+    .map(r => ({ time: new Date(r.scraped_at).toLocaleString(), price: Number(r.price) }))
 
   function untrack() {
     if (confirm('Stop tracking this product?')) {
@@ -34,14 +33,20 @@ export default function ProductDetail({ product, onUntracked }) {
     <div className="detail">
       <div className="detail-head">
         <h3>{product.name} — {product.option_label}</h3>
-        <button className="link" onClick={untrack}>stop tracking</button>
+        <div className="detail-actions">
+          <button className="ghost small" onClick={load}>↻ Refresh</button>
+          <button className="link" onClick={untrack}>stop tracking</button>
+        </div>
       </div>
 
       {loading ? <p className="muted">loading history…</p> : (
         <>
           <h4>Price over time</h4>
           {chartData.length === 0 ? (
-            <p className="muted">no successful scrapes yet — check back after the next run</p>
+            <p className="muted">
+              No data yet. Hit <strong>Scrape now</strong> up top, wait ~a minute,
+              then click <strong>↻ Refresh</strong>.
+            </p>
           ) : (
             <ResponsiveContainer width="100%" height={260}>
               <LineChart data={chartData} margin={{ top: 10, right: 20, bottom: 10, left: 0 }}>

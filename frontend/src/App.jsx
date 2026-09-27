@@ -20,9 +20,9 @@ export default function App() {
   useEffect(loadProducts, [])
 
   function scrapeNow() {
-    setMsg('Scrape started — new prices show up in about a minute. Refresh the product then.')
+    setMsg('⏳ Scrape started — new prices usually appear within a minute or two. Open a product and hit ↻ Refresh to check.')
     api.scrapeNow().catch(() => setMsg('Could not start a scrape.'))
-    setTimeout(() => setMsg(''), 9000)
+    setTimeout(() => setMsg(''), 14000)
   }
 
   return (

@@ -29,3 +29,5 @@ tr.failed { color: #c53030; background: #fff5f5; }
 .actions { display: flex; gap: 8px; align-items: center; }
 button.ghost { background: #fff; color: #2b6cb0; border: 1px solid #2b6cb0; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 14px; }
 .banner { background: #ebf8ff; border: 1px solid #bee3f8; color: #2c5282; padding: 10px 12px; border-radius: 6px; font-size: 14px; }
+.detail-actions { display: flex; gap: 10px; align-items: center; }
+button.small { padding: 5px 10px; font-size: 13px; }
